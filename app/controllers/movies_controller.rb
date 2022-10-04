@@ -9,46 +9,68 @@ class MoviesController < ApplicationController
     def index
     
       @all_ratings =  ['G','PG','PG-13','R']
-      
-      @param_ratings =  params[:ratings].nil? ? {} : params[:ratings]
-      @ratings_to_show = params[:ratings].nil? ?  @all_ratings : params[:ratings].keys ;
-
-
-      @sort = params[:sort].nil? ? "" : params[:sort]
-      
-      unless (params[:sort].present? && params[:ratings].present?)
-        h = {}.compare_by_identity
-        @all_ratings.each_with_index{|k,v| h[k] = v} 
-        redirect_to movies_path(sort: session[:sort] || "id" , ratings: session[:ratings] || h)
-        return
-        
+      unless params[:ratings].nil?
+        @param_ratings = params[:ratings]
+        session[:ratings] = @param_ratings
+        @ratings_to_show = params[:ratings].keys
       end
-      session[:ratings] =  params[:ratings]
-      session[:sort] = params[:sort]
       
-      
-      @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
-      # if params[:ratings].nil?
-      #   @ratings_to_show = @all_ratings
-      # else
-      #   @ratings_to_show = params[:ratings].keys
-      # end
-  
-      # @sort = params[:sort].nil? ? "" : params[:sort]
-      
-      # unless (params[:sort].present? && params[:ratings].present?)
-      #   h = {}.compare_by_identity
-      #   @all_ratings.each_with_index{|k,v| h[k] = v} 
-      #   redirect_to movies_path(sort: session[:sort] || "id" , ratings: session[:ratings] || h)
-      #   return
-        
-      # end
-      # session[:ratings] =  params[:ratings]
-      # session[:sort] = params[:sort]
-      
-      # .order(@sort)
-      # @movies = Movie.with_ratings(@ratings_to_show)
+      unless params[:sort].nil?
+        @sort = params[:sort]
+        session[:sort] = @sort
+      end
+
+      if params[:sort].nil? && params[:ratings].nil? && session[:ratings]
+        @ratings_to_show = session[:ratings]
+        @sort = session[:sort]
+        flash.keep
+        redirect_to movies_path({sort: session[:sort], ratings: session[:ratings]})
+      end
+
+      @movies = @all_ratings
+      if session[:ratings].present?
+        @movies = Movie.with_ratings(@ratings_to_show)
+      end
+
+      if session[:sort]
+        @movies = @movies.order(@sort)
+      end
     end
+
+
+    #   unless (params[:sort].present? && params[:ratings].present?)
+    #     h = {}.compare_by_identity
+    #     @all_ratings.each_with_index{|k,v| h[k] = v} 
+    #     redirect_to movies_path(sort: session[:sort] || "id" , ratings: session[:ratings] || h)
+    #     return
+        
+    #   end
+    #   session[:ratings] =  params[:ratings]
+    #   session[:sort] = params[:sort]
+      
+      
+    #   @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
+    #   # if params[:ratings].nil?
+    #   #   @ratings_to_show = @all_ratings
+    #   # else
+    #   #   @ratings_to_show = params[:ratings].keys
+    #   # end
+  
+    #   # @sort = params[:sort].nil? ? "" : params[:sort]
+      
+    #   # unless (params[:sort].present? && params[:ratings].present?)
+    #   #   h = {}.compare_by_identity
+    #   #   @all_ratings.each_with_index{|k,v| h[k] = v} 
+    #   #   redirect_to movies_path(sort: session[:sort] || "id" , ratings: session[:ratings] || h)
+    #   #   return
+        
+    #   # end
+    #   # session[:ratings] =  params[:ratings]
+    #   # session[:sort] = params[:sort]
+      
+    #   # .order(@sort)
+    #   # @movies = Movie.with_ratings(@ratings_to_show)
+    # end
   
     def create
       @movie = Movie.create!(movie_params)
