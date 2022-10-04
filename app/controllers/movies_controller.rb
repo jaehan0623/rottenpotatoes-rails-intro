@@ -12,13 +12,11 @@ class MoviesController < ApplicationController
       @ratings_to_show = params[:ratings].nil? ?  @all_ratings : params[:ratings]
       @sort = params[:sort].nil? ? "" : params[:sort]
 
-
-      if params[:sort].nil? && params[:ratings].nil?
-        @ratings_to_show = session[:ratings]
-        @sort = session[:sort]
-        redirect_to movies_path({sort: session[:sort], ratings: session[:ratings]})
-        return 
-      end
+      unless (params[:sort].present? && params[:ratings].present?)
+        h = {}.compare_by_identity
+        @all_ratings.each_with_index{|k,v| h[k] = v} 
+        redirect_to movies_path(sort: session[:sort] || "id" , ratings: session[:ratings] || h)
+        return
 
       session[:rating] = @ratings_to_show
       session[:sort] = @sort
