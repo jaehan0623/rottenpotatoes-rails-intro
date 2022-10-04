@@ -17,9 +17,9 @@ class MoviesController < ApplicationController
       end
 
       if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
-        session[:sort] = sort
+        session[:sort] = @sort
         session[:ratings] = @ratings_to_show
-        redirect_to :sort => sort, :ratings => @ratings_to_show and return
+        redirect_to :sort => @sort, :ratings => @ratings_to_show and return
       end
       @movies = Movie.find_all_by_rating(@ratings_to_show).order(@sort)
       # if params[:sort].nil? && params[:ratings].nil?
