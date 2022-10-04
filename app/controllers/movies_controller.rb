@@ -21,10 +21,16 @@ class MoviesController < ApplicationController
       #   return 
       # end
 
-      # session[:rating] = @ratings_to_show
-      # session[:sort] = @sort
+      session[:rating] = @ratings_to_show
+      session[:sort] = @sort
 
-      @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
+      @movies = Movie.with_ratings(@ratings_to_show)
+      if session[:sort] == "title"
+        @movies = @movies.sort! { |a,b| a.title <=> b.title }
+      elsif session[:sort] == "release_date"
+        @movies = @movies.sort! { |a,b| a.release_date <=> b.release_date } 
+      else
+      end
 
     end
 
