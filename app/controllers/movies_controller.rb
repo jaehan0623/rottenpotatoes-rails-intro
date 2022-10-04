@@ -8,6 +8,18 @@ class MoviesController < ApplicationController
   
     def index
       @all_ratings =  ['G','PG','PG-13','R']
+      @sort = params[:sort] || session[:sort]
+      @ratings_to_show = params[:ratings] || session[:ratings] || {}
+      if @ratings_to_show == {}
+        @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
+      end
+      if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
+        session[:sort] = @sort
+        session[:ratings] = @selected_ratings
+        redirect_to :sort => @sort, :ratings => @selected_ratings and return
+      end
+      @movies = Movie.with_ratings(@ratings_to_show.keys).order(@sort)
+    end
       # if params[:ratings].nil?
       #   @ratings_to_show = session[:ratings]
       # elsif params[:ratings] == {}
@@ -35,30 +47,7 @@ class MoviesController < ApplicationController
 
     #   @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
     # end
-      if params[:ratings] = {}
-        params[:ratings] = {'G' => 1,'PG' =>1 ,'PG-13' => 1,'R' => 1}
-      end 
-      # Update session selected ratings if the ratings query is updated.
-      if session[:ratings] != params[:ratings] && params[:ratings] != nil
-        session[:ratings] = params[:ratings] 
-      end
-      # Update session sort if the sort query is updated.
-      if session[:sort] != params[:sort] && params[:sort] != nil
-        session[:sort] = params[:sort]
-      end
-
-      # If anythings is missing from query params and is available in session, get it from session.
-      if params[:ratings] == nil && params[:sort] == nil && session[:ratings] != nil
-        redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
-      elsif params[:ratings] == nil && session[:ratings] != nil
-        redirect_to movies_path(:sort => params[:sort], :ratings => session[:ratings])
-      elsif params[:sort] == nil && session[:sort] != nil
-        redirect_to movies_path(:sort => session[:sort], :ratings => params[:ratings])
-      end
-      @ratings_to_show = params[:ratings] == nil ? @all_ratings : params[:ratings].keys
-
-      @movies = Movie.order(params[:sort]).where({rating: @ratings_to_show})
-    end
+   
   
 
     
