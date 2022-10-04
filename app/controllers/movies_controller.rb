@@ -21,7 +21,7 @@ class MoviesController < ApplicationController
         session[:ratings] = @ratings_to_show
         redirect_to :sort => @sort, :ratings => @ratings_to_show and return
       end
-      @movies = Movie.find_all_by_rating(@ratings_to_show).order(@sort)
+      @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
       # if params[:sort].nil? && params[:ratings].nil?
       #   @ratings_to_show = session[:ratings]
       #   @sort = session[:sort]
