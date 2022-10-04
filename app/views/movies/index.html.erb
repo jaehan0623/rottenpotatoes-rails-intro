@@ -7,7 +7,7 @@
   <thead>
     <tr>
       <th <%= {:class => @movie_highlight}= link_to "Movie Title", movies_path(:sorting_mechanism => 'title'), :id => "title_header" %>">
-         <%= link_to "Movie Title", movies_path({"sort"=>"title","ratings" => @param_ratings}), id:"title_header",class: (@sort =="title" ? 'hilite text-primary bg-warning' : '') %>
+         <%= movies_path({"sort"=>"title","ratings" => @param_ratings}), id:"title_header",class: (@sort =="title" ? 'hilite text-primary bg-warning' : '') %>
       </th>
       <th>Rating</th>
       <th  class="<%= @sort =='release_date' ? 'hilite text-primary bg-warning' : '' %>">
