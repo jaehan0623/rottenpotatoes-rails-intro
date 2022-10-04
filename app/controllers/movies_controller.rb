@@ -9,8 +9,10 @@ class MoviesController < ApplicationController
     def index
     
       @all_ratings =  ['G','PG','PG-13','R']
-      @ratings_to_show = @all_ratings
-      unless params[:ratings].nil?
+
+      if params[:ratings].nil?
+        @ratings_to_show = @all_ratings
+      else
         @ratings_to_show = params[:ratings].keys
       end
   
