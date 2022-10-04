@@ -25,8 +25,8 @@ class MoviesController < ApplicationController
       #   return 
       # end
 
-      session[:rating] = @ratings_to_show
-      session[:sort] = @sort
+      session[:rating] = params[:ratings]
+      session[:sort] = params[:sort]
 
       @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
 
