@@ -9,10 +9,19 @@ class MoviesController < ApplicationController
     def index
     
       @all_ratings =  ['G','PG','PG-13','R']
-      @ratings_to_show = params[:ratings].nil? ?  @all_ratings : params[:ratings]
-      @sort = params[:sort].nil? ? "" : params[:sort]
+      @ratings_to_show = params[:ratings] || session[:ratings] || {}
+      @sort = params[:sort] || session[:sort] 
 
+      if @ratings_to_show == {}
+        @ratings_to_show = Hash[@all_ratings.map {|r| [r, r]}]
+      end
 
+      if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
+        session[:sort] = sort
+        session[:ratings] = @ratings_to_show
+        redirect_to :sort => sort, :ratings => @ratings_to_show and return
+      end
+      @movies = Movie.find_all_by_rating(@ratings_to_show).order(@sort)
       # if params[:sort].nil? && params[:ratings].nil?
       #   @ratings_to_show = session[:ratings]
       #   @sort = session[:sort]
@@ -21,16 +30,16 @@ class MoviesController < ApplicationController
       #   return 
       # end
 
-      session[:rating] = @ratings_to_show
-      session[:sort] = @sort
+      # session[:rating] = @ratings_to_show
+      # session[:sort] = @sort
 
-      @movies = Movie.with_ratings(@ratings_to_show)
-      if session[:sort] == "title"
-        @movies = @movies.sort! { |a,b| a.title <=> b.title }
-      elsif session[:sort] == "release_date"
-        @movies = @movies.sort! { |a,b| a.release_date <=> b.release_date } 
-      else
-      end
+      # @movies = Movie.with_ratings(@ratings_to_show)
+      # if session[:sort] == "title"
+      #   @movies = @movies.sort! { |a,b| a.title <=> b.title }
+      # elsif session[:sort] == "release_date"
+      #   @movies = @movies.sort! { |a,b| a.release_date <=> b.release_date } 
+      # else
+      # end
 
     end
 
