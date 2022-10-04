@@ -1,17 +1,17 @@
 class Movie < ActiveRecord::Base
   
-  def self.all_ratings
-    ['G,PG','PG-13','R']
+  def Movie.all_ratings
+    ['G','PG','PG-13','R']
   end
-
-  def self.with_ratings(ratings_list)
-    if ratings_list.length == 0 
-      where("")
-    else
+  def Movie.with_ratings(ratings_to_show)
+    display_rating1 = []
+    ratings_to_show.each_with_index  do |val,index| 
+      display_rating1[index] = val
+     end
+    unless display_rating1.length == 0
       where(rating:display_rating1)
+    else
+      where("")
     end
-  # if ratings_list is an array such as ['G', 'PG', 'R'], retrieve all
-  #  movies with those ratings
-  # if ratings_list is nil, retrieve ALL movies
   end
- end
+end
