@@ -7,7 +7,7 @@ class MoviesController < ApplicationController
     end
   
     def index
-      @all_ratings =  {'G' : 1,'PG' : 1,'PG-13' : 1,'R' : 1}
+      @all_ratings =  {'G' => 1,'PG' => 1,'PG-13' => 1,'R' => 1}
       if(!params.has_key?(:sort) && !params.has_key?(:ratings))
         if(session.has_key?(:sort) || session.has_key?(:ratings))
           redirect_to movies_path(:sort=>session[:sort], :ratings=>session[:ratings])
