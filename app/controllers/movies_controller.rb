@@ -13,14 +13,20 @@ class MoviesController < ApplicationController
       @sort = params[:sort] || session[:sort] 
 
       if @ratings_to_show == {}
-        @ratings_to_show = Hash[@all_ratings.map {|r| [r, r]}]
+        @ratings_to_show = Hash[@all_ratings.map {|r| [r, 1]}]
       end
 
-      if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
+      if params[:sort] != session[:sort] 
+        session[:sort] = @sort
+        redirect_to :sort => @sort, :ratings => @ratings_to_show and return
+      end
+
+      if params[:ratings] != session[:ratings]
         session[:sort] = @sort
         session[:ratings] = @ratings_to_show
         redirect_to :sort => @sort, :ratings => @ratings_to_show and return
       end
+
       @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
       # if params[:sort].nil? && params[:ratings].nil?
       #   @ratings_to_show = session[:ratings]
