@@ -36,8 +36,6 @@ class MoviesController < ApplicationController
     #   @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
     # end
 
-      @all_ratings = Movie.uniq.pluck(:rating)
-
       # Update session selected ratings if the ratings query is updated.
       if session[:ratings] != params[:ratings] && params[:ratings] != nil
         session[:ratings] = params[:ratings] 
