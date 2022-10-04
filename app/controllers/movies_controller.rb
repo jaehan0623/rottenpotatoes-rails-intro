@@ -7,7 +7,7 @@ class MoviesController < ApplicationController
     end
   
     def index
-      @all_ratings =  {'G' => 1,'PG' => 1,'PG-13' => 1 ,'R' => 1}
+      @all_ratings =  ['G','PG','PG-13','R' ]
       if params[:ratings].nil?
         @ratings_to_show = session[:ratings]
       elsif params[:ratings] == {}
