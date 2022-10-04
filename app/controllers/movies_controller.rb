@@ -28,10 +28,8 @@ class MoviesController < ApplicationController
         redirect_to movies_path({sort: session[:sort], ratings: session[:ratings]})
       end
 
-      @movies = @all_ratings
-      if session[:ratings].present?
-        @movies = Movie.with_ratings(@ratings_to_show)
-      end
+      @movies = Movie.with_ratings(@ratings_to_show)
+
 
       if session[:sort]
         @movies = @movies.order(@sort)
