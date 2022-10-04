@@ -36,7 +36,7 @@ class MoviesController < ApplicationController
     #   @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
     # end
       if params[:ratings] = {}
-        params[:ratings] = @all_ratings
+        params[:ratings] = {'G' => 1,'PG' =>1 ,'PG-13' => 1,'R' => 1}
       end 
       # Update session selected ratings if the ratings query is updated.
       if session[:ratings] != params[:ratings] && params[:ratings] != nil
