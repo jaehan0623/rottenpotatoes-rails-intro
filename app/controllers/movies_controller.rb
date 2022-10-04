@@ -15,8 +15,8 @@ class MoviesController < ApplicationController
       end
       if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
         session[:sort] = @sort
-        session[:ratings] = @selected_ratings
-        redirect_to :sort => @sort, :ratings => @selected_ratings and return
+        session[:ratings] = @ratings_to_show
+        redirect_to :sort => @sort, :ratings => @ratings_to_show and return
       end
       @movies = Movie.with_ratings(@ratings_to_show.keys).order(@sort)
     end
