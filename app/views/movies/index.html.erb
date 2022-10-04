@@ -6,7 +6,7 @@
 <table class="table table-striped col-md-12" id="movies">
   %thead
     %tr
-     <th>
+     <th class="<%= @sort =='title' ? 'hilite text-primary bg-warning' : '' %>">
          <%= link_to "Movie Title", movies_path({"sort"=>"title","ratings" => @param_ratings}), id:"title_header",class: (@sort =="title" ? 'hilite text-primary bg-warning' : '') %>
       </th>
       <th>Rating</th>
