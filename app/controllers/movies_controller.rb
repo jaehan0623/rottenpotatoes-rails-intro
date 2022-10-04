@@ -16,6 +16,7 @@ class MoviesController < ApplicationController
       if params[:sort].nil? && params[:ratings].nil?
         @ratings_to_show = session[:ratings]
         @sort = session[:sort]
+        flash.keep
         redirect_to movies_path({sort: session[:sort], ratings: session[:ratings]})
       end
 
