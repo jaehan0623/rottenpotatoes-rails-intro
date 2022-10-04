@@ -5,7 +5,7 @@ class Movie < ActiveRecord::Base
     ratings_to_show.each_with_index  do |val,index| 
       ratings[index] = val
      end
-    if display_rating1.length == 0
+    if ratings.length == 0
       Movie.where("")
     else
       Movie.where(rating:ratings)
