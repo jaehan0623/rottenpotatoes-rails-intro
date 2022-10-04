@@ -21,8 +21,8 @@ class MoviesController < ApplicationController
         session[:ratings] = @ratings_to_show
       else
         if(!params.has_key?(:commit) && !params.has_key?(:sort))
-          ratings = Movie.all_ratings.keys
-          session[:ratings] = Movie.all_ratings
+          ratings = @all_ratings.keys
+          session[:ratings] = @all_ratings
         else
           ratings = session[:ratings].keys
         end
