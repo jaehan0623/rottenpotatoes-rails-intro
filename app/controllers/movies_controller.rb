@@ -27,7 +27,7 @@ class MoviesController < ApplicationController
           ratings = session[:ratings].keys
         end
       end
-      @movies = Movie.order(@sort).find_all_by_rating(ratings)
+      @movies = Movie.order(@sort).with_ratings(ratings)
       @mark  = ratings
 
       # @ratings_to_show = params[:ratings] || session[:ratings] || {}
