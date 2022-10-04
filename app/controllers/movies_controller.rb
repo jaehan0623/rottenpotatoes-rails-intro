@@ -7,48 +7,26 @@ class MoviesController < ApplicationController
     end
   
     def index
-      @all_ratings =  {'G' => 1,'PG' => 1,'PG-13' => 1,'R' => 1}
-      if(!params.has_key?(:sort) && !params.has_key?(:ratings))
-        if(session.has_key?(:sort) || session.has_key?(:ratings))
-          redirect_to movies_path(:sort=>session[:sort], :ratings=>session[:ratings])
-        end
+      @all_ratings =  ['G','PG','PG-13' ,'R']
+      @ratings_to_show = params[:ratings] || session[:ratings] || {}
+      @sort = params[:sort] || session[:sort] 
+
+      if @ratings_to_show == {}
+        @ratings_to_show = Hash[@all_ratings.map {|r| [r, 1]}]
       end
 
-      @sort = params.has_key?(:sort) ? (session[:sort] = params[:sort]) : session[:sort]
-      @ratings_to_show = params[:ratings]
-      if(@ratings_to_show != nil)
-        ratings = @ratings_to_show.keys
+      if params[:sort] != session[:sort] 
+        session[:sort] = @sort
+        redirect_to :sort => @sort, :ratings => @ratings_to_show and return
+      end
+
+      if params[:ratings] != session[:ratings]
+        session[:sort] = @sort
         session[:ratings] = @ratings_to_show
-      else
-        if(!params.has_key?(:commit) && !params.has_key?(:sort))
-          ratings = @all_ratings.keys
-          session[:ratings] = @all_ratings
-        else
-          ratings = session[:ratings].keys
-        end
+        redirect_to :sort => @sort, :ratings => @ratings_to_show and return
       end
-      @movies = Movie.order(@sort).with_ratings(ratings)
-      @mark  = ratings
 
-      # @ratings_to_show = params[:ratings] || session[:ratings] || {}
-      # @sort = params[:sort] || session[:sort] 
-
-      # if @ratings_to_show == {}
-      #   @ratings_to_show = Hash[@all_ratings.map {|r| [r, 1]}]
-      # end
-
-      # if params[:sort] != session[:sort] 
-      #   session[:sort] = @sort
-      #   redirect_to :sort => @sort, :ratings => @ratings_to_show and return
-      # end
-
-      # if params[:ratings] != session[:ratings]
-      #   session[:sort] = @sort
-      #   session[:ratings] = @ratings_to_show
-      #   redirect_to :sort => @sort, :ratings => @ratings_to_show and return
-      # end
-
-      # @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
+      @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
     end
 
   
