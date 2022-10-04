@@ -15,33 +15,9 @@ class MoviesController < ApplicationController
       # else
       #   @ratings_to_show = params[:ratings]
       # end
-
-      if !params[:sort].present? && !params[:ratings].present? 
-        if session[:sort] || session[:ratings]
-          redirect_to movies_path(:sort=>session[:sort], :ratings=>session[:ratings])
-        end
-      end
-      @sort = params[:sort].present? ? params[:sort] : session[:sort]
-      @ratings_to_show = params[:ratings]
-      if(@ratings_to_show != nil)
-        ratings = @ratings_to_show
-        session[:ratings] = @ratings_to_show
-      else
-        if !params[:commit].present? && !params[:sort].present?
-          ratings = @all_ratings
-          session[:ratings] = @all_ratings
-        else
-          ratings = session[:ratings]
-        end
-      end
-      @movies = Movie.with_ratings(ratings).order(@sort)
-    end
-
       # @param_ratings =  params[:ratings].nil? ? @all_ratings: params[:ratings]
       # @ratings_to_show = params[:ratings] || session[:ratings] || {}
-      
-    #   @sort = params[:sort] || session[:sort] 
-
+      # @sort = params[:sort] || session[:sort] 
     #   if @ratings_to_show == {}
     #     @ratings_to_show = Hash[@all_ratings.map {|r| [r, 1]}]
     #   end
@@ -60,6 +36,32 @@ class MoviesController < ApplicationController
     #   @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
     # end
 
+      @all_ratings = Movie.uniq.pluck(:rating)
+
+      # Update session selected ratings if the ratings query is updated.
+      if session[:ratings] != params[:ratings] && params[:ratings] != nil
+        session[:ratings] = params[:ratings] 
+      end
+      # Update session sort if the sort query is updated.
+      if session[:sort] != params[:sort] && params[:sort] != nil
+        session[:sort] = params[:sort]
+      end
+
+      # If anythings is missing from query params and is available in session, get it from session.
+      if params[:ratings] == nil && params[:sort] == nil && session[:ratings] != nil
+        redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+      elsif params[:ratings] == nil && session[:ratings] != nil
+        redirect_to movies_path(:sort => params[:sort], :ratings => session[:ratings])
+      elsif params[:sort] == nil && session[:sort] != nil
+        redirect_to movies_path(:sort => session[:sort], :ratings => params[:ratings])
+      end
+      @ratings_to_show = params[:ratings] == nil ? @all_ratings : params[:ratings].keys
+
+      @movies = Movie.order(params[:sort]).where({rating: @ratings_to_show})
+    end
+  
+
+    
   
     def create
       @movie = Movie.create!(movie_params)
