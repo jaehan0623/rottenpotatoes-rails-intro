@@ -1,14 +1,17 @@
 class Movie < ActiveRecord::Base
-
+  
+  def Movie.all_ratings
+    ['G','PG','PG-13','R']
+  end
   def Movie.with_ratings(ratings_to_show)
-    ratings = []
+    display_rating1 = []
     ratings_to_show.each_with_index  do |val,index| 
-      ratings[index] = val
+      display_rating1[index] = val
      end
-    if ratings.length == 0
-      Movie.where("")
+    unless display_rating1.length == 0
+      where(rating:display_rating1)
     else
-      Movie.where(rating:ratings)
+      where("")
     end
   end
 end
