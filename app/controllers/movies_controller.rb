@@ -43,10 +43,9 @@ class MoviesController < ApplicationController
       
       @movies = @movies.order(params[:sort_by]) if params[:sort_by] != ''
       session[:sort_by] = params[:sort_by]
-      @title_header = (params[:sort_by]=='title') ? 'hilite bg-warning' : ''
-      @release_date_header = (params[:sort_by]=='release_date') ? 'hilite bg-warning' : ''
+      # @title_header = (params[:sort_by]=='title') ? 'hilite bg-warning' : ''
+      # @release_date_header = (params[:sort_by]=='release_date') ? 'hilite bg-warning' : ''
     end
-   
   
 
     
