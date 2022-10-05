@@ -6,51 +6,45 @@ class MoviesController < ApplicationController
       # will render app/views/movies/show.<extension> by default
     end
   
-    def index
-      @all_ratings =  ['G','PG','PG-13','R']
-      @sort = params[:sort] || session[:sort] 
-      if params[:ratings] == {}
-        @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
-      else
-        @ratings_to_show = params[:ratings] || session[:ratings] || {}
-      end  
-      if @ratings_to_show == {}
-        @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
-      end
-      if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
-        session[:sort] = @sort
-        session[:ratings] = @ratings_to_show
-        redirect_to :sort => @sort, :ratings => @ratings_to_show and return
-      end
-      @movies = Movie.with_ratings(@ratings_to_show.keys).order(@sort)
-    end
-      # if params[:ratings].nil?
-      #   @ratings_to_show = session[:ratings]
-      # elsif params[:ratings] == {}
-      #   @ratings_to_show = Hash[@all_ratings.map {|r| [r, 1]}]
-      # else
-      #   @ratings_to_show = params[:ratings]
-      # end
-      # @param_ratings =  params[:ratings].nil? ? @all_ratings: params[:ratings]
-      # @ratings_to_show = params[:ratings] || session[:ratings] || {}
-      # @sort = params[:sort] || session[:sort] 
+    # def index
+    #   @all_ratings =  ['G','PG','PG-13','R']
+    #   @sort = params[:sort] || session[:sort]
+    #   @ratings_to_show = params[:ratings] || session[:ratings] || {}
     #   if @ratings_to_show == {}
-    #     @ratings_to_show = Hash[@all_ratings.map {|r| [r, 1]}]
+    #     @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
     #   end
-
-    #   if params[:sort] != session[:sort] 
-    #     session[:sort] = @sort
-    #     redirect_to :sort => @sort, :ratings => @ratings_to_show and return
-    #   end
-
-    #   if params[:ratings] != session[:ratings]
+    #   if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
     #     session[:sort] = @sort
     #     session[:ratings] = @ratings_to_show
     #     redirect_to :sort => @sort, :ratings => @ratings_to_show and return
     #   end
-
-    #   @movies = Movie.with_ratings(@ratings_to_show).order(@sort)
+    #   @movies = Movie.with_ratings(@ratings_to_show.keys).order(@sort)
     # end
+    def index
+      @all_ratings = ['G','PG','PG-13','R']
+      
+      if !session.key?(:ratings) || !session.key?(:sort_by)
+        @all_ratings_hash = Hash[@all_ratings.collect {|key| [key, '1']}]
+        session[:ratings] = @all_ratings_hash if !session.key?(:ratings)
+        session[:sort_by] = '' if !session.key?(:sort_by)
+        redirect_to movies_path(:ratings => @all_ratings_hash, :sort_by => '') and return
+      end
+      
+      if (!params.has_key?(:ratings) && session.key?(:ratings)) ||
+        (!params.has_key?(:sort_by) && session.key?(:sort_by))
+        redirect_to movies_path(:ratings => Hash[session[:ratings].collect {|key| [key, '1']}], :sort_by => session[:sort_by]) and return
+      end
+      
+      @ratings_to_show = params[:ratings].keys
+      @ratings_to_show_hash = Hash[@ratings_to_show.collect {|key| [key, '1']}]
+      session[:ratings] = @ratings_to_show
+      
+      @movies = Movie.with_ratings(@ratings_to_show)
+      
+      @movies = @movies.order(params[:sort_by]) if params[:sort_by] != ''
+      session[:sort_by] = params[:sort_by]
+    
+    end
    
   
 
