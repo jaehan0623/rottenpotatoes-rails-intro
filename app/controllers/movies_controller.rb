@@ -8,9 +8,9 @@ class MoviesController < ApplicationController
   
     def index
       @all_ratings =  ['G','PG','PG-13','R']
-      @sort = params[:sort] || session[:sort]
-      @ratings_to_show = params[:ratings] || {}
-      if @ratings_to_show == {}
+      @sort = params[:sort] || session[:sort] 
+      @ratings_to_show = params[:ratings] || session[:ratings] || {}
+      if params[:ratings].nil? && params[:sort].nil?
         @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
       end
       if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
