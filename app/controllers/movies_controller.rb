@@ -12,10 +12,11 @@ class MoviesController < ApplicationController
       if params[:ratings] = {}
         @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
       else
-        @ratings_to_show = params[:ratings] || session[:ratings]
-      end   
-
-      
+        @ratings_to_show = params[:ratings] || session[:ratings] || {}
+      end  
+      if @ratings_to_show == {}
+        @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
+      end
       if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
         session[:sort] = @sort
         session[:ratings] = @ratings_to_show
