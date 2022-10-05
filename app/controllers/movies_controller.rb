@@ -10,7 +10,7 @@ class MoviesController < ApplicationController
       @all_ratings =  ['G','PG','PG-13','R']
       @sort = params[:sort] || session[:sort]
       @ratings_to_show = params[:ratings] || session[:ratings] || {}
-      if @ratings_to_show == {} || (params[:commit] == 'Refresh' && params[:ratings].empty?)
+      if @ratings_to_show == {} || (params[:commit] == 'Refresh' && params[:ratings].nil?)
         @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
       end
 
