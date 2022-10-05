@@ -6,47 +6,24 @@ class MoviesController < ApplicationController
       # will render app/views/movies/show.<extension> by default
     end
   
-    # def index
-    #   @all_ratings =  ['G','PG','PG-13','R']
-    #   @sort = params[:sort] || session[:sort]
-    #   @ratings_to_show = params[:ratings] || session[:ratings] || {}
-    #   if @ratings_to_show == {}
-    #     @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
-    #   end
-    #   if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
-    #     session[:sort] = @sort
-    #     session[:ratings] = @ratings_to_show
-    #     redirect_to :sort => @sort, :ratings => @ratings_to_show and return
-    #   end
-    #   @movies = Movie.with_ratings(@ratings_to_show.keys).order(@sort)
-    # end
     def index
-      @all_ratings = ['G','PG','PG-13','R']
-      
-      if !session.key?(:ratings) || !session.key?(:sort_by)
-        @all_ratings_hash = Hash[@all_ratings.collect {|key| [key, '1']}]
-        session[:ratings] = @all_ratings_hash if !session.key?(:ratings)
-        session[:sort_by] = '' if !session.key?(:sort_by)
-        redirect_to movies_path(:ratings => @all_ratings_hash, :sort_by => '') and return
+      @all_ratings =  ['G','PG','PG-13','R']
+      @sort = params[:sort] || session[:sort]
+      @ratings_to_show = params[:ratings] || session[:ratings] || {}
+      if @ratings_to_show == {} || (params[:commit] == 'Refresh' && params[:ratings].empty?)
+        @ratings_to_show = Hash[@all_ratings.map {|rating| [rating, 1]}]
       end
-      
-      if (!params.has_key?(:ratings) && session.key?(:ratings)) ||
-        (!params.has_key?(:sort_by) && session.key?(:sort_by))
-        redirect_to movies_path(:ratings => session[:ratings], :sort_by => session[:sort_by]) and return
+
+      if params[:sort] != session[:sort] or params[:ratings] != session[:ratings]
+        session[:sort] = @sort
+        session[:ratings] = @ratings_to_show
+        redirect_to :sort => @sort, :ratings => @ratings_to_show and return
       end
-      
-      @ratings_to_show = params[:ratings].keys
-      session[:ratings] = @ratings_to_show
-      
-      @movies = Movie.with_ratings(@ratings_to_show)
-      @movies = @movies.order(params[:sort_by]) if params[:sort_by] != ''
-      session[:sort_by] = params[:sort_by]
-      # @title_header = (params[:sort_by]=='title') ? 'hilite bg-warning' : ''
-      # @release_date_header = (params[:sort_by]=='release_date') ? 'hilite bg-warning' : ''
+      @movies = Movie.with_ratings(@ratings_to_show.keys).order(@sort)
     end
+
   
 
-    
   
     def create
       @movie = Movie.create!(movie_params)
